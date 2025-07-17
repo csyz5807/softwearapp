@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐶 うちの子の暮らし管理アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tab.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .record-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .record-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .record-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .record-item .time {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .dog-profile {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .dog-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 4em;
+            color: white;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            transition: width 0.8s ease;
+        }
+
+        .chart-label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .reminder-list {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .reminder-item {
+            padding: 10px;
+            border-bottom: 1px solid #ffeaa7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-tab {
+                width: 90%;
+                text-align: center;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐶 うちの子の暮らし管理アプリ</h1>
+            <p>愛犬の生活習慣を"見える化"して、もっと健康で幸せに</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">🏠 ダッシュボード</button>
+            <button class="nav-tab" onclick="showTab('daily-log')">📝 日々の記録</button>
+            <button class="nav-tab" onclick="showTab('health')">🩺 健康管理</button>
+            <button class="nav-tab" onclick="showTab('analytics')">📊 データ分析</button>
+            <button class="nav-tab" onclick="showTab('profile')">🐕 プロフィール</button>
+        </div>
+
+        <!-- ダッシュボード -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="meals-today">0</h3>
+                    <p>今日の食事回数</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="walks-today">0</h3>
+                    <p>今日の散歩回数</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="weight-current">--</h3>
+                    <p>現在の体重（kg）</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="streak-days">0</h3>
+                    <p>連続記録日数</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 今日のリマインダー</h2>
+                <div class="reminder-list" id="reminders">
+                    <div class="reminder-item">
+                        <span>🍽️ 朝ごはん</span>
+                        <button class="btn btn-secondary" onclick="markComplete(this)">完了</button>
+                    </div>
+                    <div class="reminder-item">
+                        <span>🚶 朝の散歩</span>
+                        <button class="btn btn-secondary" onclick="markComplete(this)">完了</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 最近の記録</h2>
+                <div id="recent-records">
+                    <!-- 最近の記録がここに表示される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 日々の記録 -->
+        <div id="daily-log" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>🍽️ 食事記録</h2>
+                    <div class="form-group">
+                        <label>食事時間</label>
+                        <input type="datetime-local" id="meal-time">
+                    </div>
+                    <div class="form-group">
+                        <label>フードの種類</label>
+                        <select id="meal-type">
+                            <option value="朝食">朝食</option>
+                            <option value="昼食">昼食</option>
+                            <option value="夕食">夕食</option>
+                            <option value="おやつ">おやつ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>量（g）</label>
+                        <input type="number" id="meal-amount" placeholder="100">
+                    </div>
+                    <div class="form-group">
+                        <label>メモ</label>
+                        <textarea id="meal-memo" placeholder="完食した、少し残したなど"></textarea>
+                    </div>
+                    <button class="btn" onclick="addMealRecord()">記録する</button>
+                </div>
+
+                <div class="card">
+                    <h2>🚶 散歩記録</h2>
+                    <div class="form-group">
+                        <label>散歩時間</label>
+                        <input type="datetime-local" id="walk-time">
+                    </div>
+                    <div class="form-group">
+                        <label>散歩時間（分）</label>
+                        <input type="number" id="walk-duration" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label>距離（km）</label>
+                        <input type="number" id="walk-distance" step="0.1" placeholder="2.5">
+                    </div>
+                    <div class="form-group">
+                        <label>天気</label>
+                        <select id="walk-weather">
+                            <option value="晴れ">☀️ 晴れ</option>
+                            <option value="曇り">☁️ 曇り</option>
+                            <option value="雨">🌧️ 雨</option>
+                            <option value="雪">❄️ 雪</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>メモ</label>
+                        <textarea id="walk-memo" placeholder="いつもより元気だった、他の犬と遊んだなど"></textarea>
+                    </div>
+                    <button class="btn" onclick="addWalkRecord()">記録する</button>
+                </div>
+
+                <div class="card">
+                    <h2>🚽 排泄記録</h2>
+                    <div class="form-group">
+                        <label>時間</label>
+                        <input type="datetime-local" id="toilet-time">
+                    </div>
+                    <div class="form-group">
+                        <label>種類</label>
+                        <select id="toilet-type">
+                            <option value="おしっこ">おしっこ</option>
+                            <option value="うんち">うんち</option>
+                            <option value="両方">両方</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>状態</label>
+                        <select id="toilet-condition">
+                            <option value="正常">正常</option>
+                            <option value="軟便">軟便</option>
+                            <option value="下痢">下痢</option>
+                            <option value="硬め">硬め</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>場所</label>
+                        <select id="toilet-location">
+                            <option value="室内">室内</option>
+                            <option value="散歩中">散歩中</option>
+                            <option value="庭">庭</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addToiletRecord()">記録する</button>
+                </div>
+
+                <div class="card">
+                    <h2>😴 睡眠記録</h2>
+                    <div class="form-group">
+                        <label>就寝時間</label>
+                        <input type="datetime-local" id="sleep-start">
+                    </div>
+                    <div class="form-group">
+                        <label>起床時間</label>
+                        <input type="datetime-local" id="sleep-end">
+                    </div>
+                    <div class="form-group">
+                        <label>睡眠の質</label>
+                        <select id="sleep-quality">
+                            <option value="良好">良好</option>
+                            <option value="普通">普通</option>
+                            <option value="不安定">不安定</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addSleepRecord()">記録する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 健康管理 -->
+        <div id="health" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>⚖️ 体重・体調記録</h2>
+                    <div class="form-group">
+                        <label>測定日時</label>
+                        <input type="datetime-local" id="health-date">
+                    </div>
+                    <div class="form-group">
+                        <label>体重（kg）</label>
+                        <input type="number" id="health-weight" step="0.1" placeholder="5.5">
+                    </div>
+                    <div class="form-group">
+                        <label>体調</label>
+                        <select id="health-condition">
+                            <option value="とても良い">とても良い</option>
+                            <option value="良い">良い</option>
+                            <option value="普通">普通</option>
+                            <option value="やや悪い">やや悪い</option>
+                            <option value="悪い">悪い</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>食欲</label>
+                        <select id="health-appetite">
+                            <option value="旺盛">旺盛</option>
+                            <option value="普通">普通</option>
+                            <option value="やや少ない">やや少ない</option>
+                            <option value="少ない">少ない</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>気になる症状</label>
+                        <textarea id="health-symptoms" placeholder="咳、くしゃみ、元気がないなど"></textarea>
+                    </div>
+                    <button class="btn" onclick="addHealthRecord()">記録する</button>
+                </div>
+
+                <div class="card">
+                    <h2>💊 投薬・ワクチン管理</h2>
+                    <div class="form-group">
+                        <label>種類</label>
+                        <select id="medicine-type">
+                            <option value="薬">薬</option>
+                            <option value="ワクチン">ワクチン</option>
+                            <option value="フィラリア予防">フィラリア予防</option>
+                            <option value="ノミ・ダニ駆除">ノミ・ダニ駆除</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>名前</label>
+                        <input type="text" id="medicine-name" placeholder="薬名またはワクチン名">
+                    </div>
+                    <div class="form-group">
+                        <label>投与日時</label>
+                        <input type="datetime-local" id="medicine-date">
+                    </div>
+                    <div class="form-group">
+                        <label>次回予定日</label>
+                        <input type="date" id="medicine-next">
+                    </div>
+                    <div class="form-group">
+                        <label>メモ</label>
+                        <textarea id="medicine-memo" placeholder="副作用の有無、効果など"></textarea>
+                    </div>
+                    <button class="btn" onclick="addMedicineRecord()">記録する</button>
+                </div>
+
+                <div class="card">
+                    <h2>🏥 通院記録</h2>
+                    <div class="form-group">
+                        <label>通院日</label>
+                        <input type="date" id="hospital-date">
+                    </div>
+                    <div class="form-group">
+                        <label>病院名</label>
+                        <input type="text" id="hospital-name" placeholder="〇〇動物病院">
+                    </div>
+                    <div class="form-group">
+                        <label>受診理由</label>
+                        <select id="hospital-reason">
+                            <option value="定期健診">定期健診</option>
+                            <option value="ワクチン">ワクチン</option>
+                            <option value="体調不良">体調不良</option>
+                            <option value="怪我">怪我</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>診察内容</label>
+                        <textarea id="hospital-content" placeholder="診察結果、処方薬、指導内容など"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>次回予定</label>
+                        <input type="date" id="hospital-next">
+                    </div>
+                    <button class="btn" onclick="addHospitalRecord()">記録する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- データ分析 -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h2>📊 生活習慣グラフ</h2>
+                <div class="chart-container">
+                    <h3>今週の食事回数</h3>
+                    <div class="chart-bar">
+                        <div class="chart-label">月</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">火</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">水</div>
+                        <div class="chart-fill" style="width: 66%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">木</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">金</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">土</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">日</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏃 散歩統計</h2>
+                <div class="chart-container">
+                    <h3>今週の散歩時間（分）</h3>
+                    <div class="chart-bar">
+                        <div class="chart-label">月</div>
+                        <div class="chart-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">火</div>
+                        <div class="chart-fill" style="width: 90%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">水</div>
+                        <div class="chart-fill" style="width: 70%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">木</div>
+                        <div class="chart-fill" style="width: 85%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">金</div>
+                        <div class="chart-fill" style="width: 95%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">土</div>
+                        <div class="chart-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">日</div>
+                        <div class="chart-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 体重推移</h2>
+                <div class="chart-container">
+                    <h3>過去1ヶ月の体重変化</h3>
+                    <div style="height: 200px; background: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                        体重グラフ（実装時にはChart.jsなどを使用）
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- プロフィール -->
+        <div id="profile" class="tab-content">
+            <div class="card">
+                <div class="dog-profile">
+                    <div class="dog-avatar">🐕</div>
+                    <h2 id="dog-name">ポチ</h2>
+                    <p id="dog-info">柴犬 / 3歳 / オス</p>
+                    <div style="margin: 20px 0;">
+                        <span class="badge">散歩マスター</span>
+                        <span class="badge">健康観察3日連続</span>
+                        <span class="badge">記録初心者</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🐕 基本情報編集</h2>
+                <div class="form-group">
+                    <label>名前</label>
+                    <input type="text" id="profile-name" value="ポチ">
+                </div>
+                <div class="form-group">
+                    <label>犬種</label>
+                    <input type="text" id="profile-breed" value="柴犬">
+                </div>
+                <div class="form-group">
+                    <label>誕生日</label>
+                    <input type="date" id="profile-birthday">
+                </div>
+                <div class="form-group">
+                    <label>性別</label>
+                    <select id="profile-gender">
+                        <option value="オス">オス</option>
+                        <option value="メス">メス</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>体重（kg）</label>
+                    <input type="number" id="profile-weight" step="0.1" value="5.5">
+                </div>
+                <div class="form-group">
+                    <label>性格・特徴</label>
+                    <textarea id="profile-personality" placeholder="人懐っこい、活発、食いしん坊など"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>好きな食べ物</label>
+                    <input type="text" id="profile-favorite-food" placeholder="ささみ、チーズなど">
+                </div>
+                <div class="form-group">
+                    <label>かかりつけ病院</label>
+                    <input type="text" id="profile-hospital" placeholder="〇〇動物病院">
+                </div>
+                <button class="btn" onclick="updateProfile()">プロフィール更新</button>
+            </div>
+
+            <div class="card">
+                <h2>🎖️ 獲得バッジ</h2>
+                <div id="badges-container">
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <span class="badge">🚶 散歩マスター</span>
+                        <span class="badge">📝 記録初心者</span>
+                        <span class="badge">💪 健康観察3日連続</span>
+                        <span class="badge">🍽️ 食事記録10回</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🚨 緊急時情報</h2>
+                <div class="form-group">
+                    <label>緊急連絡先（動物病院）</label>
+                    <input type="tel" id="emergency-hospital" placeholder="03-1234-5678">
+                </div>
+                <div class="form-group">
+                    <label>夜間救急病院</label>
+                    <input type="tel" id="emergency-night" placeholder="03-9876-5432">
+                </div>
+                <div class="form-group">
+                    <label>アレルギー・注意事項</label>
+                    <textarea id="emergency-allergies" placeholder="薬物アレルギー、食物アレルギーなど"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>現在の投薬</label>
+                    <textarea id="emergency-medications" placeholder="現在服用中の薬"></textarea>
+                </div>
+                <button class="btn" onclick="updateEmergencyInfo()">緊急時情報更新</button>
+                <button class="btn btn-secondary" onclick="generateEmergencyCard()">緊急時カード生成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <!-- モーダル -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // データストレージ
+        let appData = {
+            profile: {
+                name: 'ポチ',
+                breed: '柴犬',
+                birthday: '2021-03-15',
+                gender: 'オス',
+                weight: 5.5,
+                personality: '人懐っこくて活発',
+                favoriteFood: 'ささみ',
+                hospital: '〇〇動物病院'
+            },
+            records: {
+                meals: [],
+                walks: [],
+                toilet: [],
+                sleep: [],
+                health: [],
+                medicine: [],
+                hospital: []
+            },
+            stats: {
+                mealsToday: 0,
+                walksToday: 0,
+                currentWeight: 5.5,
+                streakDays: 3
+            },
+            badges: ['散歩マスター', '記録初心者', '健康観察3日連続', '食事記録10回'],
+            emergency: {
+                hospital: '',
+                nightHospital: '',
+                allergies: '',
+                medications: ''
+            }
+        };
+
+        // タブ切り替え
+        function showTab(tabName) {
+            // すべてのタブコンテンツを非表示
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // すべてのタブボタンを非アクティブ
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 指定されたタブを表示
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // タブ切り替え時にデータを更新
+            if (tabName === 'dashboard') {
+                updateDashboard();
+            } else if (tabName === 'analytics') {
+                updateAnalytics();
+            }
+        }
+
+        // 食事記録追加
+        function addMealRecord() {
+            const time = document.getElementById('meal-time').value;
+            const type = document.getElementById('meal-type').value;
+            const amount = document.getElementById('meal-amount').value;
+            const memo = document.getElementById('meal-memo').value;
+            
+            if (!time || !amount) {
+                showNotification('時間と量を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                time: time,
+                type: type,
+                amount: parseFloat(amount),
+                memo: memo,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            appData.records.meals.push(record);
+            updateStats();
+            showNotification('食事記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('meal-time').value = '';
+            document.getElementById('meal-amount').value = '';
+            document.getElementById('meal-memo').value = '';
+        }
+
+        // 散歩記録追加
+        function addWalkRecord() {
+            const time = document.getElementById('walk-time').value;
+            const duration = document.getElementById('walk-duration').value;
+            const distance = document.getElementById('walk-distance').value;
+            const weather = document.getElementById('walk-weather').value;
+            const memo = document.getElementById('walk-memo').value;
+            
+            if (!time || !duration) {
+                showNotification('時間と散歩時間を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                time: time,
+                duration: parseInt(duration),
+                distance: parseFloat(distance) || 0,
+                weather: weather,
+                memo: memo,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            appData.records.walks.push(record);
+            updateStats();
+            showNotification('散歩記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('walk-time').value = '';
+            document.getElementById('walk-duration').value = '';
+            document.getElementById('walk-distance').value = '';
+            document.getElementById('walk-memo').value = '';
+        }
+
+        // 排泄記録追加
+        function addToiletRecord() {
+            const time = document.getElementById('toilet-time').value;
+            const type = document.getElementById('toilet-type').value;
+            const condition = document.getElementById('toilet-condition').value;
+            const location = document.getElementById('toilet-location').value;
+            
+            if (!time) {
+                showNotification('時間を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                time: time,
+                type: type,
+                condition: condition,
+                location: location,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            appData.records.toilet.push(record);
+            showNotification('排泄記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('toilet-time').value = '';
+        }
+
+        // 睡眠記録追加
+        function addSleepRecord() {
+            const start = document.getElementById('sleep-start').value;
+            const end = document.getElementById('sleep-end').value;
+            const quality = document.getElementById('sleep-quality').value;
+            
+            if (!start || !end) {
+                showNotification('就寝時間と起床時間を入力してください', 'error');
+                return;
+            }
+            
+            const startTime = new Date(start);
+            const endTime = new Date(end);
+            const duration = (endTime - startTime) / (1000 * 60 * 60); // 時間単位
+            
+            const record = {
+                id: Date.now(),
+                start: start,
+                end: end,
+                duration: duration,
+                quality: quality,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            appData.records.sleep.push(record);
+            showNotification('睡眠記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('sleep-start').value = '';
+            document.getElementById('sleep-end').value = '';
+        }
+
+        // 健康記録追加
+        function addHealthRecord() {
+            const date = document.getElementById('health-date').value;
+            const weight = document.getElementById('health-weight').value;
+            const condition = document.getElementById('health-condition').value;
+            const appetite = document.getElementById('health-appetite').value;
+            const symptoms = document.getElementById('health-symptoms').value;
+            
+            if (!date || !weight) {
+                showNotification('日時と体重を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                date: date,
+                weight: parseFloat(weight),
+                condition: condition,
+                appetite: appetite,
+                symptoms: symptoms
+            };
+            
+            appData.records.health.push(record);
+            appData.stats.currentWeight = parseFloat(weight);
+            updateStats();
+            showNotification('健康記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('health-date').value = '';
+            document.getElementById('health-weight').value = '';
+            document.getElementById('health-symptoms').value = '';
+        }
+
+        // 投薬記録追加
+        function addMedicineRecord() {
+            const type = document.getElementById('medicine-type').value;
+            const name = document.getElementById('medicine-name').value;
+            const date = document.getElementById('medicine-date').value;
+            const next = document.getElementById('medicine-next').value;
+            const memo = document.getElementById('medicine-memo').value;
+            
+            if (!name || !date) {
+                showNotification('薬名と投与日時を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                type: type,
+                name: name,
+                date: date,
+                next: next,
+                memo: memo
+            };
+            
+            appData.records.medicine.push(record);
+            showNotification('投薬記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('medicine-name').value = '';
+            document.getElementById('medicine-date').value = '';
+            document.getElementById('medicine-next').value = '';
+            document.getElementById('medicine-memo').value = '';
+        }
+
+        // 通院記録追加
+        function addHospitalRecord() {
+            const date = document.getElementById('hospital-date').value;
+            const name = document.getElementById('hospital-name').value;
+            const reason = document.getElementById('hospital-reason').value;
+            const content = document.getElementById('hospital-content').value;
+            const next = document.getElementById('hospital-next').value;
+            
+            if (!date || !name || !content) {
+                showNotification('日付、病院名、診察内容を入力してください', 'error');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                date: date,
+                name: name,
+                reason: reason,
+                content: content,
+                next: next
+            };
+            
+            appData.records.hospital.push(record);
+            showNotification('通院記録を追加しました！');
+            
+            // フォームリセット
+            document.getElementById('hospital-date').value = '';
+            document.getElementById('hospital-name').value = '';
+            document.getElementById('hospital-content').value = '';
+            document.getElementById('hospital-next').value = '';
+        }
+
+        // プロフィール更新
+        function updateProfile() {
+            const name = document.getElementById('profile-name').value;
+            const breed = document.getElementById('profile-breed').value;
+            const birthday = document.getElementById('profile-birthday').value;
+            const gender = document.getElementById('profile-gender').value;
+            const weight = document.getElementById('profile-weight').value;
+            const personality = document.getElementById('profile-personality').value;
+            const favoriteFood = document.getElementById('profile-favorite-food').value;
+            const hospital = document.getElementById('profile-hospital').value;
+            
+            if (!name || !breed) {
+                showNotification('名前と犬種を入力してください', 'error');
+                return;
+            }
+            
+            appData.profile = {
+                name: name,
+                breed: breed,
+                birthday: birthday,
+                gender: gender,
+                weight: parseFloat(weight) || 0,
+                personality: personality,
+                favoriteFood: favoriteFood,
+                hospital: hospital
+            };
+            
+            // プロフィール表示を更新
+            updateProfileDisplay();
+            showNotification('プロフィールを更新しました！');
+        }
+
+        // 緊急時情報更新
+        function updateEmergencyInfo() {
+            const hospital = document.getElementById('emergency-hospital').value;
+            const nightHospital = document.getElementById('emergency-night').value;
+            const allergies = document.getElementById('emergency-allergies').value;
+            const medications = document.getElementById('emergency-medications').value;
+            
+            appData.emergency = {
+                hospital: hospital,
+                nightHospital: nightHospital,
+                allergies: allergies,
+                medications: medications
+            };
+            
+            showNotification('緊急時情報を更新しました！');
+        }
+
+        // 緊急時カード生成
+        function generateEmergencyCard() {
+            const cardContent = `
+                <h2>🚨 緊急時情報カード</h2>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3>🐕 ${appData.profile.name}</h3>
+                    <p><strong>犬種:</strong> ${appData.profile.breed}</p>
+                    <p><strong>生年月日:</strong> ${appData.profile.birthday}</p>
+                    <p><strong>体重:</strong> ${appData.profile.weight}kg</p>
+                    <hr>
+                    <p><strong>かかりつけ病院:</strong> ${appData.emergency.hospital || '未設定'}</p>
+                    <p><strong>夜間救急:</strong> ${appData.emergency.nightHospital || '未設定'}</p>
+                    <p><strong>アレルギー:</strong> ${appData.emergency.allergies || 'なし'}</p>
+                    <p><strong>現在の投薬:</strong> ${appData.emergency.medications || 'なし'}</p>
+                </div>
+                <button class="btn" onclick="closeModal()">閉じる</button>
+            `;
+            
+            showModal(cardContent);
+        }
+
+        // 統計更新
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 今日の食事回数
+            appData.stats.mealsToday = appData.records.meals.filter(meal => meal.date === today).length;
+            
+            // 今日の散歩回数
+            appData.stats.walksToday = appData.records.walks.filter(walk => walk.date === today).length;
+            
+            // 連続記録日数（簡易実装）
+            appData.stats.streakDays = calculateStreakDays();
+            
+            // 表示を更新
+            document.getElementById('meals-today').textContent = appData.stats.mealsToday;
+            document.getElementById('walks-today').textContent = appData.stats.walksToday;
+            document.getElementById('weight-current').textContent = appData.stats.currentWeight.toFixed(1);
+            document.getElementById('streak-days').textContent = appData.stats.streakDays;
+        }
+
+        // 連続記録日数計算
+        function calculateStreakDays() {
+            // 簡易実装：実際はより複雑なロジックが必要
+            return 3;
+        }
+
+        // ダッシュボード更新
+        function updateDashboard() {
+            updateStats();
+            updateRecentRecords();
+        }
+
+        // 最近の記録更新
+        function updateRecentRecords() {
+            const container = document.getElementById('recent-records');
+            container.innerHTML = '';
+            
+            // 最新の記録を5件表示
+            const allRecords = [];
+            
+            // 各種記録を統合
+            appData.records.meals.forEach(record => {
+                allRecords.push({
+                    ...record,
+                    type: 'meal',
+                    icon: '🍽️',
+                    title: `${record.type} - ${record.amount}g`
+                });
+            });
+            
+            appData.records.walks.forEach(record => {
+                allRecords.push({
+                    ...record,
+                    type: 'walk',
+                    icon: '🚶',
+                    title: `散歩 - ${record.duration}分`
+                });
+            });
+            
+            appData.records.toilet.forEach(record => {
+                allRecords.push({
+                    ...record,
+                    type: 'toilet',
+                    icon: '🚽',
+                    title: `${record.type} - ${record.condition}`
+                });
+            });
+            
+            // 時間順でソート
+            allRecords.sort((a, b) => new Date(b.time || b.date) - new Date(a.time || a.date));
+            
+            // 最新5件を表示
+            allRecords.slice(0, 5).forEach(record => {
+                const recordDiv = document.createElement('div');
+                recordDiv.className = 'record-item';
+                recordDiv.innerHTML = `
+                    <h3>${record.icon} ${record.title}</h3>
+                    <p class="time">${formatDateTime(record.time || record.date)}</p>
+                    ${record.memo ? `<p>${record.memo}</p>` : ''}
+                `;
+                container.appendChild(recordDiv);
+            });
+            
+            if (allRecords.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">まだ記録がありません</p>';
+            }
+        }
+
+        // 日時フォーマット
+        function formatDateTime(dateTime) {
+            const date = new Date(dateTime);
+            return date.toLocaleString('ja-JP', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // プロフィール表示更新
+        function updateProfileDisplay() {
+            document.getElementById('dog-name').textContent = appData.profile.name;
+            document.getElementById('dog-info').textContent = `${appData.profile.breed} / ${calculateAge(appData.profile.birthday)}歳 / ${appData.profile.gender}`;
+        }
+
+        // 年齢計算
+        function calculateAge(birthday) {
+            if (!birthday) return 0;
+            const today = new Date();
+            const birthDate = new Date(birthday);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // 分析データ更新
+        function updateAnalytics() {
+            // 実装時には実際のデータを使用
+            console.log('Analytics updated');
+        }
+
+        // リマインダー完了
+        function markComplete(button) {
+            button.textContent = '✅ 完了';
+            button.disabled = true;
+            button.style.background = '#28a745';
+            showNotification('タスクを完了しました！');
+        }
+
+        // 通知表示
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = `notification ${type === 'error' ? 'error' : 'success'}`;
+            notification.style.background = type === 'error' ? '#dc3545' : '#28a745';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // モーダル表示
+        function showModal(content) {
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        // モーダル閉じる
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            updateProfileDisplay();
+            
+            // 現在時刻を入力フィールドに設定
+            const now = new Date();
+            const localDateTime = now.toISOString().slice(0, 16);
+            
+            document.getElementById('meal-time').value = localDateTime;
+            document.getElementById('walk-time').value = localDateTime;
+            document.getElementById('toilet-time').value = localDateTime;
+            document.getElementById('sleep-start').value = localDateTime;
+            document.getElementById('health-date').value = localDateTime;
+            document.getElementById('medicine-date').value = localDateTime;
+            
+            // プロフィールフォームに既存データを設定
+            document.getElementById('profile-name').value = appData.profile.name;
+            document.getElementById('profile-breed').value = appData.profile.breed;
+            document.getElementById('profile-birthday').value = appData.profile.birthday;
+            document.getElementById('profile-gender').value = appData.profile.gender;
+            document.getElementById('profile-weight').value = appData.profile.weight;
+            document.getElementById('profile-personality').value = appData.profile.personality;
+            document.getElementById('profile-favorite-food').value = appData.profile.favoriteFood;
+            document.getElementById('profile-hospital').value = appData.profile.hospital;
+        });
+    </script>
+</body>
+</html>
